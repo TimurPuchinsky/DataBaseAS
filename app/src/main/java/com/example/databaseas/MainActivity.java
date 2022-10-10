@@ -19,8 +19,8 @@ import android.widget.EditText;
 public class MainActivity extends Activity implements OnClickListener {
 
     final String LOG_TAG = "myLogs";
-    Button btnAdd, btnRead, btnClear;
-    EditText etName, etEmail;
+    Button btnAdd, btnRead, btnClear, btnUpd, btnDel;
+    EditText etName, etEmail, etID;
     DBHelper dbHelper;
 
 
@@ -31,24 +31,26 @@ public class MainActivity extends Activity implements OnClickListener {
     @Override
 
     public void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
 
         btnAdd = (Button) findViewById(R.id.btnAdd);
         btnAdd.setOnClickListener(this);
 
-
         btnRead = (Button) findViewById(R.id.btnRead);
         btnRead.setOnClickListener(this);
-
 
         btnClear = (Button) findViewById(R.id.btnClear);
         btnClear.setOnClickListener(this);
 
-
         etName = (EditText) findViewById(R.id.etName);
         etEmail = (EditText) findViewById(R.id.etEmail);
+
+        btnClear = (Button) findViewById(R.id.btnClear);   btnClear.setOnClickListener(this);
+        btnUpd = (Button) findViewById(R.id.btnUpd);   btnUpd.setOnClickListener(this);
+        btnDel = (Button) findViewById(R.id.btnDel);   btnDel.setOnClickListener(this);
+        etName = (EditText) findViewById(R.id.etName);   etEmail = (EditText) findViewById(R.id.etEmail);   etID = (EditText) findViewById(R.id.etID);
 
 
 // создаем объект для создания и управления версиями БД
@@ -70,6 +72,7 @@ public class MainActivity extends Activity implements OnClickListener {
 
         String name = etName.getText().toString();
         String email = etEmail.getText().toString();
+        String id = etID.getText().toString();
 
 // подключаемся к БД
 
