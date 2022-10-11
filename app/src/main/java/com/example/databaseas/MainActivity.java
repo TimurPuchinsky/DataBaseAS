@@ -14,7 +14,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-
+import android.widget.ArrayAdapter;
+import android.widget.GridView;
 
 public class MainActivity extends Activity implements OnClickListener {
 
@@ -23,6 +24,9 @@ public class MainActivity extends Activity implements OnClickListener {
     EditText etName, etEmail, etID;
     DBHelper dbHelper;
 
+    String[] data = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"};
+    GridView gvMain;
+    ArrayAdapter<String> adapter;
 
     /**
      * Called when the activity is first created.
@@ -47,15 +51,33 @@ public class MainActivity extends Activity implements OnClickListener {
         etName = (EditText) findViewById(R.id.etName);
         etEmail = (EditText) findViewById(R.id.etEmail);
 
-        btnClear = (Button) findViewById(R.id.btnClear);   btnClear.setOnClickListener(this);
-        btnUpd = (Button) findViewById(R.id.btnUpd);   btnUpd.setOnClickListener(this);
-        btnDel = (Button) findViewById(R.id.btnDel);   btnDel.setOnClickListener(this);
-        etName = (EditText) findViewById(R.id.etName);   etEmail = (EditText) findViewById(R.id.etEmail);   etID = (EditText) findViewById(R.id.etID);
+        btnClear = (Button) findViewById(R.id.btnClear);
+        btnClear.setOnClickListener(this);
+        btnUpd = (Button) findViewById(R.id.btnUpd);
+        btnUpd.setOnClickListener(this);
+        btnDel = (Button) findViewById(R.id.btnDel);
+        btnDel.setOnClickListener(this);
+        etName = (EditText) findViewById(R.id.etName);
+        etEmail = (EditText) findViewById(R.id.etEmail);
+        etID = (EditText) findViewById(R.id.etID);
 
 
 // создаем объект для создания и управления версиями БД
         dbHelper = new DBHelper(this);
+        
+        adapter = new ArrayAdapter<String>(this, R.layout.item, R.id.tvText, data);
+        gvMain = (GridView) findViewById(R.id.gvMain);
+        gvMain.setAdapter(adapter);
+        adjustGridView();
 
+    }
+
+    private void adjustGridView() {
+        gvMain.setNumColumns(GridView.AUTO_FIT);
+        gvMain.setColumnWidth(80);
+        gvMain.setVerticalSpacing(5);
+        gvMain.setHorizontalSpacing(5);
+        gvMain.setStretchMode(GridView.NO_STRETCH);
     }
 
 
@@ -87,69 +109,74 @@ public class MainActivity extends Activity implements OnClickListener {
                 cv.put("email", email);
 
 // вставляем запись и получаем ее ID
-        long rowID = db.insert("mytable", null, cv); Log.d(LOG_TAG, "row inserted, ID = " + rowID); break; case R.id.btnRead:
+                long rowID = db.insert("mytable", null, cv);
+                Log.d(LOG_TAG, "row inserted, ID = " + rowID);
+                break;
+            case R.id.btnRead:
                 Log.d(LOG_TAG, "--- Rows in mytable: ---");
 
 // делаем запрос всех данных из таблицы mytable, получаем Cursor
-        Cursor c = db.query("mytable", null, null, null, null, null, null);
+                Cursor c = db.query("mytable", null, null, null, null, null, null);
 
 // ставим позицию курсора на первую строку выборки // если в выборке нет строк, вернется false
-        if (c.moveToFirst()) {
+                if (c.moveToFirst()) {
 
 // определяем номера столбцов по имени в выборке
-            int idColIndex = c.getColumnIndex("id"); int nameColIndex = c.getColumnIndex("name"); int emailColIndex = c.getColumnIndex("email");
-                do {
+                    int idColIndex = c.getColumnIndex("id");
+                    int nameColIndex = c.getColumnIndex("name");
+                    int emailColIndex = c.getColumnIndex("email");
+                    do {
 // получаем значения по номерам столбцов и пишем все в лог
-                    Log.d(LOG_TAG, "ID = " + c.getInt(idColIndex) + ", name = " + c.getString(nameColIndex) + ", email = " + c.getString(emailColIndex));
+                        Log.d(LOG_TAG, "ID = " + c.getInt(idColIndex) + ", name = " + c.getString(nameColIndex) + ", email = " + c.getString(emailColIndex));
 // переход на следующую строку
 // а если следующей нет (текущая - последняя), то false - выходим из цикла
 
-                } while (c.moveToNext());
-        } else Log.d(LOG_TAG, "0 rows");
-        c.close();
-        break;
-        case R.id.btnClear:
-            Log.d(LOG_TAG, "--- Clear mytable: ---");
+                    } while (c.moveToNext());
+                } else Log.d(LOG_TAG, "0 rows");
+                c.close();
+                break;
+            case R.id.btnClear:
+                Log.d(LOG_TAG, "--- Clear mytable: ---");
 
 // удаляем все записи
 
-        int clearCount = db.delete("mytable", null, null);
-        Log.d(LOG_TAG, "deleted rows count = " + clearCount);
-        break;
+                int clearCount = db.delete("mytable", null, null);
+                Log.d(LOG_TAG, "deleted rows count = " + clearCount);
+                break;
 
-    }
+        }
 // закрываем подключение к БД
         dbHelper.close();
-}
-
-
-class DBHelper extends SQLiteOpenHelper {
-
-
-    public DBHelper(Context context) {
-        // конструктор суперкласса
-           super(context, "myDB", null, 1);
-
     }
 
 
-    @Override
+    class DBHelper extends SQLiteOpenHelper {
 
-    public void onCreate(SQLiteDatabase db) {
-        Log.d(LOG_TAG, "--- onCreate database ---");
+
+        public DBHelper(Context context) {
+            // конструктор суперкласса
+            super(context, "myDB", null, 1);
+
+        }
+
+
+        @Override
+
+        public void onCreate(SQLiteDatabase db) {
+            Log.d(LOG_TAG, "--- onCreate database ---");
 
 // создаем таблицу с полями
-    db.execSQL("create table mytable (" + "id integer primary key autoincrement," +"name text," + "email text" + ");");
+            db.execSQL("create table mytable (" + "id integer primary key autoincrement," + "name text," + "email text" + ");");
+
+        }
+
+        @Override
+
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+
+        }
 
     }
-
-    @Override
-
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-
-
-    }
-
-}
 
 }
