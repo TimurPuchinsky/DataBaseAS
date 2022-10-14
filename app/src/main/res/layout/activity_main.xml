@@ -1,124 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_height="fill_parent"
-    android:layout_width="fill_parent"
-    android:orientation="vertical">
 
-    <LinearLayout
-        android:id="@+id/linearLayout4"
+    android:layout_width="match_parent"
+
+    android:layout_height="match_parent"
+
+    android:background="@color/white"
+
+    tools:context=".MainActivity">
+
+
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+
+        android:id="@+id/add_button"
+
+        android:layout_width="wrap_content"
+
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_width="match_parent">
 
-        <TextView
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="25dp"
-            android:layout_width="wrap_content"
-            android:text="ID"></TextView>
+        android:layout_marginEnd="28dp"
 
-        <EditText
-            android:id="@+id/etID"
-            android:layout_width="70dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:minHeight="48dp"
-            tools:ignore="SpeakableTextPresentCheck"></EditText>
+        android:layout_marginRight="28dp"
 
-        <Button
-            android:id="@+id/btnUpd"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Update"></Button>
+        android:layout_marginBottom="28dp"
 
-        <Button
-            android:id="@+id/btnDel"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Delete"></Button>
-    </LinearLayout>
+        android:clickable="true"
 
-    <LinearLayout
-        android:id="@+id/linearLayout1"
+        android:focusable="true"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:srcCompat="@color/white" />
+
+
+
+    <androidx.recyclerview.widget.RecyclerView
+
+        android:id="@+id/recyclerView"
+
+        android:layout_width="409dp"
+
+        android:layout_height="729dp"
+
+        android:paddingTop="?attr/actionBarSize"
+
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        app:layout_constraintEnd_toEndOf="parent"
+
+        app:layout_constraintHorizontal_bias="0.0"
+
+        app:layout_constraintStart_toStartOf="parent"
+
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+
+
+    <TextView
+
+        android:id="@+id/no_data"
+
+        android:layout_width="wrap_content"
+
         android:layout_height="wrap_content"
-        android:layout_width="match_parent">
 
-        <TextView
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_width="wrap_content"
-            android:text="Name"></TextView>
+        android:layout_marginTop="16dp"
 
-        <EditText
-            android:id="@+id/etName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="."
-            tools:ignore="TouchTargetSizeCheck">
+        android:alpha="0.4"
 
-            <requestFocus></requestFocus>
-        </EditText>
-    </LinearLayout>
+        android:text="No Data."
 
-    <LinearLayout
-        android:id="@+id/linearLayout3"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent">
+        android:textSize="20sp"
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:layout_width="wrap_content"
-            android:text="Email"></TextView>
+        android:visibility="gone"
 
-        <EditText
-            android:id="@+id/etEmail"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="."
-            tools:ignore="TouchTargetSizeCheck"></EditText>
-    </LinearLayout>
+        app:layout_constraintEnd_toEndOf="parent"
 
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_height="wrap_content"
-        android:layout_width="match_parent">
+        app:layout_constraintStart_toStartOf="parent"
 
-        <Button
-            android:id="@+id/btnAdd"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Add"></Button>
+        app:layout_constraintTop_toBottomOf="@+id/empty_imageview" />
 
-        <Button
-            android:id="@+id/btnRead"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Read"></Button>
 
-        <Button
-            android:id="@+id/btnClear"
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content"
-            android:text="Clear"></Button>
-    </LinearLayout>
-    <LinearLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-        <GridView
-            android:id="@+id/gvMain"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-        </GridView>
-    </LinearLayout>
 
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -1,181 +1,270 @@
 package com.example.databaseas;
 
-import android.app.Activity;
-import android.content.ContentValues;
+import androidx.annotation.Nullable;
+
+import androidx.appcompat.app.AlertDialog;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+
+import androidx.recyclerview.widget.RecyclerView;
+
+
+
+import android.app.AlarmManager;
+
+import android.app.PendingIntent;
+
 import android.content.Context;
+
+import android.content.DialogInterface;
+
+import android.content.Intent;
+
 import android.database.Cursor;
 
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
+
 import android.os.Bundle;
-import android.util.Log;
+
+import android.view.ContextMenu;
+
+import android.view.Menu;
+
+import android.view.MenuInflater;
+
+import android.view.MenuItem;
+
 import android.view.View;
 
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.ArrayAdapter;
-import android.widget.GridView;
+import android.widget.ImageView;
 
-public class MainActivity extends Activity implements OnClickListener {
+import android.widget.TextView;
 
-    final String LOG_TAG = "myLogs";
-    Button btnAdd, btnRead, btnClear, btnUpd, btnDel;
-    EditText etName, etEmail, etID;
-    DBHelper dbHelper;
+import android.widget.Toast;
 
-    String[] data = {"a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k"};
-    GridView gvMain;
-    ArrayAdapter<String> adapter;
 
-    /**
-     * Called when the activity is first created.
-     */
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+
+
+import java.util.ArrayList;
+
+
+
+public class MainActivity extends AppCompatActivity {
+
+
+
+    RecyclerView recyclerView;
+
+    FloatingActionButton add_button;
+
+    ImageView empty_imageview;
+
+    TextView no_data;
+
+
+
+    MyDatabaseHelper myDB;
+
+    ArrayList<String> book_id, book_title, book_author, book_pages;
+
+    CustomAdapter customAdapter;
+
+
 
     @Override
 
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
-        btnAdd = (Button) findViewById(R.id.btnAdd);
-        btnAdd.setOnClickListener(this);
-
-        btnRead = (Button) findViewById(R.id.btnRead);
-        btnRead.setOnClickListener(this);
-
-        btnClear = (Button) findViewById(R.id.btnClear);
-        btnClear.setOnClickListener(this);
-
-        etName = (EditText) findViewById(R.id.etName);
-        etEmail = (EditText) findViewById(R.id.etEmail);
-
-        btnClear = (Button) findViewById(R.id.btnClear);
-        btnClear.setOnClickListener(this);
-        btnUpd = (Button) findViewById(R.id.btnUpd);
-        btnUpd.setOnClickListener(this);
-        btnDel = (Button) findViewById(R.id.btnDel);
-        btnDel.setOnClickListener(this);
-        etName = (EditText) findViewById(R.id.etName);
-        etEmail = (EditText) findViewById(R.id.etEmail);
-        etID = (EditText) findViewById(R.id.etID);
 
 
-// создаем объект для создания и управления версиями БД
-        dbHelper = new DBHelper(this);
-        
-        adapter = new ArrayAdapter<String>(this, R.layout.item, R.id.tvText, data);
-        gvMain = (GridView) findViewById(R.id.gvMain);
-        gvMain.setAdapter(adapter);
-        adjustGridView();
+        recyclerView = findViewById(R.id.recyclerView);
+
+        add_button = findViewById(R.id.add_button);
+
+        empty_imageview = findViewById(R.id.empty_imageview);
+
+        no_data = findViewById(R.id.no_data);
+
+
+
+        add_button.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+
+            public void onClick(View view) {
+
+                Intent intent = new Intent(MainActivity.this, AddActivity.class);
+
+                startActivity(intent);
+
+            }
+
+        });
+
+
+
+        myDB = new MyDatabaseHelper(MainActivity.this);
+
+        book_id = new ArrayList<>();
+
+        book_title = new ArrayList<>();
+
+        book_author = new ArrayList<>();
+
+        book_pages = new ArrayList<>();
+
+
+
+        storeDataInArrays();
+
+
+
+        customAdapter = new CustomAdapter(MainActivity.this,this, book_id, book_title, book_author,
+
+                book_pages);
+
+        recyclerView.setAdapter(customAdapter);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(MainActivity.this));
+
+
 
     }
 
-    private void adjustGridView() {
-        gvMain.setNumColumns(GridView.AUTO_FIT);
-        gvMain.setColumnWidth(80);
-        gvMain.setVerticalSpacing(5);
-        gvMain.setHorizontalSpacing(5);
-        gvMain.setStretchMode(GridView.NO_STRETCH);
-    }
 
 
     @Override
 
-    public void onClick(View v) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
 
-// создаем объект для данных
+        super.onActivityResult(requestCode, resultCode, data);
 
-        ContentValues cv = new ContentValues();
+        if(requestCode == 1){
 
-
-// получаем данные из полей ввода
-
-        String name = etName.getText().toString();
-        String email = etEmail.getText().toString();
-        String id = etID.getText().toString();
-
-// подключаемся к БД
-
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        switch (v.getId()) {
-            case R.id.btnAdd:
-                Log.d(LOG_TAG, "--- Insert in mytable: ---");
-
-// подготовим данные для вставки в виде пар: наименование столбца - значение
-
-                cv.put("name", name);
-                cv.put("email", email);
-
-// вставляем запись и получаем ее ID
-                long rowID = db.insert("mytable", null, cv);
-                Log.d(LOG_TAG, "row inserted, ID = " + rowID);
-                break;
-            case R.id.btnRead:
-                Log.d(LOG_TAG, "--- Rows in mytable: ---");
-
-// делаем запрос всех данных из таблицы mytable, получаем Cursor
-                Cursor c = db.query("mytable", null, null, null, null, null, null);
-
-// ставим позицию курсора на первую строку выборки // если в выборке нет строк, вернется false
-                if (c.moveToFirst()) {
-
-// определяем номера столбцов по имени в выборке
-                    int idColIndex = c.getColumnIndex("id");
-                    int nameColIndex = c.getColumnIndex("name");
-                    int emailColIndex = c.getColumnIndex("email");
-                    do {
-// получаем значения по номерам столбцов и пишем все в лог
-                        Log.d(LOG_TAG, "ID = " + c.getInt(idColIndex) + ", name = " + c.getString(nameColIndex) + ", email = " + c.getString(emailColIndex));
-// переход на следующую строку
-// а если следующей нет (текущая - последняя), то false - выходим из цикла
-
-                    } while (c.moveToNext());
-                } else Log.d(LOG_TAG, "0 rows");
-                c.close();
-                break;
-            case R.id.btnClear:
-                Log.d(LOG_TAG, "--- Clear mytable: ---");
-
-// удаляем все записи
-
-                int clearCount = db.delete("mytable", null, null);
-                Log.d(LOG_TAG, "deleted rows count = " + clearCount);
-                break;
+            recreate();
 
         }
-// закрываем подключение к БД
-        dbHelper.close();
+
     }
 
 
-    class DBHelper extends SQLiteOpenHelper {
 
+    void storeDataInArrays(){
 
-        public DBHelper(Context context) {
-            // конструктор суперкласса
-            super(context, "myDB", null, 1);
+        Cursor cursor = myDB.readAllData();
+
+        if(cursor.getCount() == 0){
+
+            empty_imageview.setVisibility(View.VISIBLE);
+
+            no_data.setVisibility(View.VISIBLE);
+
+        }else{
+
+            while (cursor.moveToNext()){
+
+                book_id.add(cursor.getString(0));
+
+                book_title.add(cursor.getString(1));
+
+                book_author.add(cursor.getString(2));
+
+                book_pages.add(cursor.getString(3));
+
+            }
+
+            empty_imageview.setVisibility(View.GONE);
+
+            no_data.setVisibility(View.GONE);
 
         }
 
+    }
 
-        @Override
 
-        public void onCreate(SQLiteDatabase db) {
-            Log.d(LOG_TAG, "--- onCreate database ---");
 
-// создаем таблицу с полями
-            db.execSQL("create table mytable (" + "id integer primary key autoincrement," + "name text," + "email text" + ");");
+    @Override
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        MenuInflater inflater = getMenuInflater();
+
+        inflater.inflate(R.menu.my_menu, menu);
+
+        return super.onCreateOptionsMenu(menu);
+
+    }
+
+
+
+    @Override
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        if(item.getItemId() == R.id.delete_all){
+
+            confirmDialog();
 
         }
 
-        @Override
+        return super.onOptionsItemSelected(item);
 
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    }
 
 
-        }
+
+    void confirmDialog(){
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Удалить все?");
+
+        builder.setMessage("Вы уверены, что хотите удалить все данные?");
+
+        builder.setPositiveButton("Да", new DialogInterface.OnClickListener() {
+
+            @Override
+
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                MyDatabaseHelper myDB = new MyDatabaseHelper(MainActivity.this);
+
+                myDB.deleteAllData();
+
+                //Refresh Activity
+
+                Intent intent = new Intent(MainActivity.this, MainActivity.class);
+
+                startActivity(intent);
+
+                finish();
+
+            }
+
+        });
+
+        builder.setNegativeButton("Нет", new DialogInterface.OnClickListener() {
+
+            @Override
+
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+
+
+            }
+
+        });
+
+        builder.create().show();
 
     }
 
